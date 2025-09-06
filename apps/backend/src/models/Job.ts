@@ -75,12 +75,20 @@ const jobSchema = new mongoose.Schema<IJob>(
   }
 );
 
-// Add text index for search functionality
+// Add text index for search functionality with field weights
 jobSchema.index({
   title: 'text',
   company: 'text',
   location: 'text',
   description: 'text',
+}, {
+  // weights: {
+  //   title: 10,      // title matches are most important
+  //   company: 5,     // company matches are next
+  //   location: 3,    // location matches
+  //   description: 1  // description matches least important
+  // },
+  name: "job_search_index"
 });
 
 export const Job = mongoose.model<IJob>('Job', jobSchema);

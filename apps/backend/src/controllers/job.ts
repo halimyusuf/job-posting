@@ -30,11 +30,27 @@ export const getJobs = async (req: Request, res: Response) => {
       req.query
     );
 
-    const query: any = {};
+    const query: Record<string, any> = {};
+    const sortOptions: Record<string, any> = { createdAt: -1 };
 
     if (search) {
-      // use regex for text search
-      query.$text = { $search: search };
+      const trimmed = search.trim();
+      // If the search term is very short (1-2 chars) or looks partial, use regex to match substrings.
+      // $text requires tokenization and often ignores short fragments.
+      if (trimmed.length <= 6) {
+        const re = new RegExp(trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        query.$or = [
+          { title: re },
+          { company: re },
+          { location: re },
+          { description: re },
+        ];
+      } else {
+        // Use text search with score for longer queries
+        query.$text = { $search: search };
+        // When searching, sort by text score first, then date
+        sortOptions.score = { $meta: 'textScore' };
+      }
     }
 
     if (type) {
@@ -45,23 +61,27 @@ export const getJobs = async (req: Request, res: Response) => {
       query.location = new RegExp(location, 'i');
     }
 
+    // Handle salary range query
     if (minSalary || maxSalary) {
-      query.salary = {};
-      // @ts-ignore
-      if (minSalary) query.salary.$gte = parseInt(minSalary);
-      // @ts-ignore
-      if (maxSalary) query.salary.$lte = parseInt(maxSalary);
+      if (minSalary) {
+        query['salary.min'] = { $gte: Number(minSalary) };
+      }
+      if (maxSalary) {
+        query['salary.max'] = { $lte: Number(maxSalary) };
+      }
     }
 
     const skip = (page - 1) * limit;
 
+    console.log('Query:', JSON.stringify(query));
+
     const [jobs, total] = await Promise.all([
-      Job.find(query)
+      Job.find(query, query.$text ? { score: { $meta: "textScore" } } : undefined)
         .populate('employer', 'name email')
-        .sort({ createdAt: -1 })
+        .sort(sortOptions)
         .skip(skip)
         .limit(limit),
-      Job.countDocuments(query),
+        Job.countDocuments(query),
     ]);
 
     res.json({
