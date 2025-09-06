@@ -1,0 +1,102 @@
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+**/dist/
+**/build/
+**/coverage/
+
+# Monorepo / workspace
+.pnp.*
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Generated lockfiles
+package-lock.json
+pnpm-lock.yaml
+
+# TypeScript
+*.tsbuildinfo
+
+# Biome/cache and ESlint
+.biome/
+.eslintcache
+
+# Vite
+node_modules/.vite
+**/.vite
+.vite/
+
+# Yarn
+.yarn/*
+.yarnrc.yml
+
+# Editors
+*.sublime-workspace
+*.sublime-project
+*.swp
+
+# Mac
+*.DS_Store
+
+# Backend specific
+apps/backend/.env
+apps/backend/node_modules/
+apps/backend/.next
+
+# Frontend specific
+apps/frontend/node_modules/
+apps/frontend/dist
+apps/frontend/.idea
+apps/frontend/.vite
+
+# Misc
+*.tgz
+
+# Ignore local dev sqlite/db if any
+*.sqlite
+
+# Secrets
+secrets.json
+
+# JetBrains
+.idea/
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Ignore built prisma client if present
+prisma/client/
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore build artifacts
+**/.cache
+
