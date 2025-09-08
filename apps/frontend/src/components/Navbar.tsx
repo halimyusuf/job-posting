@@ -48,6 +48,16 @@ export const Navbar: React.FC = () => {
     navigate('/');
   };
 
+  // local search state for navbar
+  const [navSearch, setNavSearch] = React.useState('');
+
+  const onSearchSubmit = (q?: string) => {
+    const query = (q ?? navSearch).trim();
+    if (!query) return;
+    // navigate to jobs list with search query
+    navigate(`/jobs?search=${encodeURIComponent(query)}`);
+  };
+
   const userMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -195,8 +205,21 @@ export const Navbar: React.FC = () => {
                 placeholder="Search jobs, company, or location"
                 inputProps={{ 'aria-label': 'search jobs' }}
                 sx={{ ml: 1, flex: 1 }}
+                value={navSearch}
+                onChange={(e) => setNavSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    onSearchSubmit();
+                  }
+                }}
               />
-              <Button variant="contained" color="primary" sx={{ ml: 1, borderRadius: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ ml: 1, borderRadius: 2 }}
+                onClick={() => onSearchSubmit()}
+              >
                 Search
               </Button>
             </Paper>
